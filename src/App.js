@@ -39,7 +39,7 @@ function App() {
   // Function to fetch the token metadata from the contract using tokenURI
   const getTokenMetadata = async (tokenId) => {
     // Alchemy API URL (replace with your actual Alchemy API URL)
-    const alchemyUrl = 'https://eth-mainnet.alchemyapi.io/v2/YOUR_ALCHEMY_API_KEY';
+    const alchemyUrl = 'https://eth-mainnet.alchemyapi.io/v2/O-OqvTh3I6T03IO6PM_KaqGLAK_lKsKF';
     const provider = new ethers.JsonRpcProvider(alchemyUrl);
 
     // Contract address and ABI (replace with your contract's address and ABI)
