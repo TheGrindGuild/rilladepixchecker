@@ -43,7 +43,7 @@ function App() {
     const provider = new ethers.JsonRpcProvider(alchemyUrl);
 
     // Contract address and ABI (replace with your contract's address and ABI)
-    const contractAddress = '0xYourContractAddress';
+    const contractAddress = '0xa128ECdb362786512aF9E8b16fC3bb5F96fF78e8';
     const abi = [
       "function tokenURI(uint256 tokenId) public view returns (string memory)"
     ];
