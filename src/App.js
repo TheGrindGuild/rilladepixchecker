@@ -1,75 +1,60 @@
 import React, { useState } from 'react';
+import { ethers } from 'ethers'; // Import ethers.js
 import './App.css';
-import { ethers } from 'ethers';
+
+const contractAddress = "0xa128ECdb362786512aF9E8b16fC3bb5F96fF78e8"; // Your contract address
+const alchemyApiKey = "O-OqvTh3I6T03IO6PM_KaqGLAK_lKsKF"; // Your Alchemy API key
+
+// The ABI you provided
+const contractABI = [
+  {
+    "inputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+    "name": "hasTwinMap",
+    "outputs": [{"internalType": "bool", "name": "", "type": "bool"}],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
 
 function App() {
   const [tokenId, setTokenId] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Use the contract address and ABI
-  const contractAddress = '0xa128ECdb362786512aF9E8b16fC3bb5F96fF78e8';
-  const contractABI = [
-    {
-      "constant": true,
-      "inputs": [
-        {
-          "name": "tokenId",
-          "type": "uint256"
-        }
-      ],
-      "name": "hasTwinMap",
-      "outputs": [
-        {
-          "name": "",
-          "type": "bool"
-        }
-      ],
-      "payable": false,
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ];
-
-  // Initialize the provider and contract
-  const provider = new ethers.JsonRpcProvider('https://eth-mainnet.alchemyapi.io/v2/O-OqvTh3I6T03IO6PM_KaqGLAK_lKsKF');
-  const contract = new ethers.Contract(contractAddress, contractABI, provider);
-
-  const checkEdition = async () => {
+  const checkTwinMap = async () => {
+    // Validate the token ID input
     const parsedTokenId = parseInt(tokenId, 10);
-  
-    // Validate the tokenId to make sure it's a number
-    if (isNaN(parsedTokenId) || parsedTokenId <= 0) {
+
+    if (isNaN(parsedTokenId) || tokenId.trim() === '') {
       setMessage('Please enter a valid NFT edition number');
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
-      console.log('Calling hasTwinMap with tokenId:', parsedTokenId);
-  
-      // Call the 'hasTwinMap' function with the token ID
+      // Connect to Alchemy's provider
+      const provider = new ethers.JsonRpcProvider(`https://eth-mainnet.alchemyapi.io/v2/${alchemyApiKey}`);
+      
+      // Create contract instance
+      const contract = new ethers.Contract(contractAddress, contractABI, provider);
+
+      // Call the `hasTwinMap` function with the tokenId
       const result = await contract.hasTwinMap(parsedTokenId);
-  
-      console.log('Contract call result:', result);
-  
-      // Handle the response properly, even if it's 0x (false)
-      if (result === false) {
-        setMessage('This token does not have a twin map.');
-      } else if (result === true) {
-        setMessage('This token has a twin map.');
+
+      // Set message based on the result
+      if (result) {
+        setMessage('This token has a twin map!');
       } else {
-        setMessage('Unexpected result from contract call.');
+        setMessage('This token does not have a twin map.');
       }
     } catch (error) {
       console.error('Error fetching data:', error);
-      setMessage(`Error: ${error.message}`);
+      setMessage('Error fetching data, please try again later.');
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="App">
@@ -81,8 +66,9 @@ function App() {
           onChange={(e) => setTokenId(e.target.value)}
           placeholder="Enter NFT edition number"
         />
-        <button onClick={checkEdition}>Check Twin Map</button>
-        {loading && <p>Loading...</p>}
+        <button onClick={checkTwinMap} disabled={loading}>
+          {loading ? 'Loading...' : 'Check Twin Map'}
+        </button>
         {message && <p>{message}</p>}
       </header>
     </div>
